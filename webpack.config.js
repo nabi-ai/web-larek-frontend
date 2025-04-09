@@ -54,7 +54,12 @@ const config = {
           options: {
             sourceMap: true,
             sassOptions: {
-              includePaths: ["src/scss"]
+              includePaths: ["src/scss"],
+              // добавила, потому что мешается overlay с Warning:
+              // Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+              // Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+              // More info: https://sass-lang.com/d/legacy-js-api
+              silenceDeprecations: ['legacy-js-api']
             }
           }
         }],
