@@ -24,7 +24,7 @@ export class OrderCart extends Component<IOrderCart> {
   set items(items: HTMLElement[]) {
     if (items.length) {
       this.listContainer.replaceChildren(...items);
-      this.button.disabled = false;
+      this.setDisabled(this.button, false);
     } else {
       this.listContainer.replaceChildren(
         createElement<HTMLParagraphElement>('p', { textContent: 'Корзина пуста' })

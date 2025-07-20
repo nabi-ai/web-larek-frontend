@@ -1,9 +1,10 @@
 import { Model } from './base/Model';
 import { FormErrors, Guid, IAppState, ICardItem, IOrder, IOrderForm, Optional } from '../types';
 import { DELIVERY_ADDRESS_REGEX, EMAIL_REGEX, PHONE_REGEX } from '../utils/constants';
+import { IEvents } from './base/events';
 
 // Общая функция для обработки ошибок
-const handleErrors = (errors: any, events: any, formErrors: any) => {
+const handleErrors = (errors: FormErrors, events: IEvents, formErrors: FormErrors) => {
   formErrors = errors;
   events.emit('validation-errors:change', formErrors);
   return Object.keys(errors).length === 0;
@@ -47,7 +48,7 @@ export class AppState extends Model<IAppState> {
 
   // Валидация данных заказа
   validateOrder() {
-    const errors: typeof this.formErrors = {};
+    const errors: FormErrors = {};
     const { address, payment } = this.order;
 
     if (!address) {
@@ -65,7 +66,7 @@ export class AppState extends Model<IAppState> {
 
   // Валидация контактных данных
   validateContacts() {
-    const errors: typeof this.formErrors = {};
+    const errors: FormErrors = {};
     const { email, phone } = this.order;
 
     if (phone?.startsWith('8')) {

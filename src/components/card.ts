@@ -1,9 +1,7 @@
 import { Component } from './base/component';
-import { ICard, ICartEvents, ICardPreview, ICardBasket, Optional } from '../types';
+import { ICard, ICartEvents, ICardPreview, ICardBasket, Optional, CardCategory } from '../types';
 import { ensureElement } from '../utils/utils';
-
-//Тип для категорий карточек товаров
-type CardCategory = 'софт-скил' | 'другое' | 'дополнительное' | 'кнопка' | 'хард-скил';
+import { categoryStyles } from '../utils/constants';
 
 //Базовый класс карточки товара
 export class Card<T> extends Component<ICard> {
@@ -13,13 +11,7 @@ export class Card<T> extends Component<ICard> {
   protected priceElement: HTMLElement;
 
   //Соответствие категорий их CSS-классам
-  private readonly categoryStyles: Record<CardCategory, string> = {
-    'софт-скил': 'soft',
-    другое: 'other',
-    дополнительное: 'additional',
-    кнопка: 'button',
-    'хард-скил': 'hard',
-  };
+  private readonly categoryStyles: Record<CardCategory, string> = categoryStyles;
 
   //Создает экземпляр карточки товара
   constructor(container: HTMLElement, actions?: ICartEvents) {
@@ -86,6 +78,10 @@ export class CardPreview extends Card<ICardPreview> {
   //Устанавливает описание товара
   set text(value: string) {
     this.setText(this.descriptionElement, value);
+  }
+
+  set actionButtonDisabled(value: boolean) {
+    this.setDisabled(this.actionButton, value);
   }
 }
 

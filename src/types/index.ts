@@ -17,13 +17,7 @@ interface IPage {
 /*--Интерфейсы карточки--*/
 
 //Интерфейс карточки товара на главной страницы
-interface ICard {
-  id: Guid;
-  category: string;
-  title: string;
-  image: string;
-  price: number;
-}
+type ICard = Omit<ICardItem, 'description'>;
 
 //Интерфейс карточки товара в превью
 interface ICardPreview {
@@ -66,12 +60,12 @@ interface IOrderForm {
   address?: string;
   phone?: string;
   email?: string;
-  total?: string | number;
 }
 
 //Интерфейс заказа
 interface IOrder extends IOrderForm {
   items: string[];
+  total: number;
 }
 
 //Интерфейс формы успешного заказа
@@ -109,12 +103,16 @@ interface ICardItem {
   description: string;
   category: string;
   image: string;
-  price: Optional<number>;
+  price: number | null;
 }
 
 interface IOrderSuccessResponse {
   id: Guid;
+  total: number;
 }
+
+//Тип для категорий карточек товаров
+type CardCategory = 'софт-скил' | 'другое' | 'дополнительное' | 'кнопка' | 'хард-скил';
 
 export {
   Optional,
@@ -136,4 +134,5 @@ export {
   ISuccessActions,
   IModalData,
   ISuccess,
+  CardCategory,
 };

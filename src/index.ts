@@ -40,6 +40,9 @@ const modal = new Modal(
 const basket = new OrderCart(cloneTemplate(basketTemplate), eventBus);
 const delivery = new Order(cloneTemplate(orderTemplate), eventBus);
 const contact = new Contacts(cloneTemplate(contactsTemplate), eventBus);
+const success = new OrderSuccess(cloneTemplate(successTemplate), {
+  onClick: () => modal.close(),
+});
 
 // Обработчики UI событий
 eventBus.on('modal:open', () => (page.locked = true));
@@ -49,7 +52,7 @@ eventBus.on('modal:close', () => (page.locked = false));
 eventBus.on('catalog:update', () => {
   page.catalog = appState.cardList.map((item) => {
     const card = new Card(cloneTemplate(cardCatalogTemplate), {
-      onClick: () => eventBus.emit('product:select', { itemId: item.id }),
+      onClick: () => eventBus.emit('product:select', { item }),
     });
     return card.render({
       category: item.category,
@@ -60,15 +63,17 @@ eventBus.on('catalog:update', () => {
   });
 });
 
-eventBus.on('product:select', ({ itemId }: { itemId: Guid }) => {
-  modal.renderContentLoading();
-  api.getCardItem(itemId).then(appState.showCard.bind(appState)).catch(console.error);
+eventBus.on('product:select', ({ item }: { item: ICardItem }) => {
+  appState.showCard(item);
 });
 
 eventBus.on('card:show-content', (item: ICardItem) => {
   const preview = new CardPreview(cloneTemplate(cardPreviewTemplate), {
-    onClick: () => eventBus.emit('product:add', item),
+    onClick: () => {
+      eventBus.emit('product:add', item);
+    },
   });
+  preview.actionButtonDisabled = item.price === null;
   modal.render({
     content: preview.render({
       title: item.title,
@@ -81,9 +86,12 @@ eventBus.on('card:show-content', (item: ICardItem) => {
 
 // Обработчики корзины
 eventBus.on('product:add', (item: ICardItem) => {
-  appState.addCardToBasket(item.id);
-  appState.setCardToBasket(item);
-  page.counter = appState.basketList.length;
+  if (!appState.basket.some((basketItem) => basketItem.id === item.id)) {
+    appState.addCardToBasket(item.id);
+    appState.setCardToBasket(item);
+    page.counter = appState.basketList.length;
+  }
+
   modal.close();
 });
 
@@ -189,9 +197,6 @@ eventBus.on('contacts:submit', () => {
   api
     .orderCard(appState.order)
     .then(() => {
-      const success = new OrderSuccess(cloneTemplate(successTemplate), {
-        onClick: () => modal.close(),
-      });
       modal.render({
         content: success.render({ total: appState.getTotal() }),
       });

@@ -38,7 +38,7 @@ export class Form<T> extends Component<IFormValid> {
 
   //Устанавливает состояние валидности формы
   set valid(value: boolean) {
-    this._submit.disabled = !value;
+    this.setDisabled(this._submit, !value);
   }
 
   //Устанавливает текст ошибок формы
